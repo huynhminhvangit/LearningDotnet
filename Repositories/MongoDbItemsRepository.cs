@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LearningDotnet.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -22,32 +23,32 @@ namespace LearningDotnet.Repositories
       itemsCollection = mongoDatabase.GetCollection<Item>(collectionName);
     }
 
-    public void CreateItem(Item item)
+    public async Task CreateItemAsync(Item item)
     {
-      itemsCollection.InsertOne(item);
+      await itemsCollection.InsertOneAsync(item);
     }
 
-    public void DeleteItem(Guid Id)
-    {
-      var filter = filterDefinitionBuilder.Eq(item => item.Id, Id);
-      itemsCollection.DeleteOne(filter);
-    }
-
-    public Item GetItem(Guid Id)
+    public async Task DeleteItemAsync(Guid Id)
     {
       var filter = filterDefinitionBuilder.Eq(item => item.Id, Id);
-      return itemsCollection.Find(filter).SingleOrDefault();
+      await itemsCollection.DeleteOneAsync(filter);
     }
 
-    public IEnumerable<Item> GetItems()
+    public async Task<Item> GetItemAsync(Guid Id)
     {
-      return itemsCollection.Find(new BsonDocument()).ToList();
+      var filter = filterDefinitionBuilder.Eq(item => item.Id, Id);
+      return await itemsCollection.Find(filter).SingleOrDefaultAsync();
     }
 
-    public void UpdateItem(Item item)
+    public async Task<IEnumerable<Item>> GetItemsAsync()
+    {
+      return await itemsCollection.Find(new BsonDocument()).ToListAsync();
+    }
+
+    public async Task UpdateItemAsync(Item item)
     {
       var filter = filterDefinitionBuilder.Eq(e => e.Id, item.Id);
-      itemsCollection.ReplaceOne(filter, item);
+      await itemsCollection.ReplaceOneAsync(filter, item);
     }
   }
 }
