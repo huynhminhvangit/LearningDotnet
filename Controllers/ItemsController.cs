@@ -3,6 +3,8 @@ using LearningDotnet.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using LearningDotnet.Entities;
 using System;
+using System.Linq;
+using LearningDotnet.DTOs;
 
 namespace LearningDotnet.Controllers
 {
@@ -11,24 +13,24 @@ namespace LearningDotnet.Controllers
     [Route("[controller]")]
     public class ItemsController : ControllerBase
     {
-        private readonly InMemItemsRepository repository;
+        private readonly IItemsRepository repository;
 
-        public ItemsController()
+        public ItemsController(IItemsRepository repository)
         {
-            repository = new InMemItemsRepository();
+            this.repository = repository;
         }
 
         // GET /items
         [HttpGet]
-        public IEnumerable<Item> GetItems()
+        public IEnumerable<ItemDTO> GetItems()
         {
-            var items = repository.GetItems();
+            var items = repository.GetItems().Select(item => item.AsDTO());
             return items;
         }
 
         // GET /items/{Id}
         [HttpGet("{Id}")]
-        public ActionResult<Item> GetItem(Guid Id)
+        public ActionResult<ItemDTO> GetItem(Guid Id)
         {
             var item = repository.GetItem(Id);
 
@@ -36,7 +38,7 @@ namespace LearningDotnet.Controllers
                 return NotFound();
             }
 
-            return item;
+            return item.AsDTO();
         }
 
     }
