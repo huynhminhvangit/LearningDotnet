@@ -24,5 +24,21 @@ namespace LearningDotnet.Repositories
       return items.Where(item => item.Id == Id).SingleOrDefault();
     }
 
+    public void CreateItem(Item item)
+    {
+      items.Add(item);
+    }
+
+    public void UpdateItem(Item item)
+    {
+      var index = items.FindIndex(e => e.Id == item.Id);
+      items[index] = item;
+    }
+
+    public void DeleteItem(Guid Id)
+    {
+      var index = items.FindIndex(e => e.Id == Id);
+      items.RemoveAt(index);
+    }
   }
 }
